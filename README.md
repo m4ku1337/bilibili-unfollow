@@ -8,39 +8,34 @@
 
 ## 使用方法
 
-### 1. 获取必要参数
+### 1. 确保已登录 B 站
 
-在运行脚本之前，需要先获取两个参数：
+脚本会自动从 Cookie 中读取你的 UID 和 CSRF Token，只需确保当前浏览器已登录 B 站即可。如果需要手动填写，参见下方[手动配置](#手动配置)。
 
-- **UID**：打开 B 站个人主页，URL 中的数字即为你的 UID。例如 `space.bilibili.com/123456789` 中的 `123456789`。
-- **csrf_token**：
-  1. 在 B 站任意页面按 `F12` 打开开发者工具
-  2. 切换到 `Application`（应用程序）标签页
-  3. 左侧找到 `Cookies` → `bilibili.com`
-  4. 找到 `bili_jct` 这一项，复制它的值即为 csrf_token
-
-### 2. 修改脚本配置
-
-打开 `bilibili_unfollow.js`，修改脚本开头的两个配置项：
-
-```js
-const vmid = '你的UID';
-const csrf = '你的csrf_token';
-```
-
-### 3. 运行脚本
+### 2. 运行脚本
 
 1. 在浏览器中打开你的 B 站关注列表页面：`space.bilibili.com/你的UID/relation/follow`
 2. 按 `F12` 打开控制台（Console）
 3. 将脚本完整复制粘贴到控制台，按回车运行
-4. 等待脚本自动执行完成
+4. 等脚本自动执行完成
+
+### 手动配置
+
+如果自动获取失败（如未登录），脚本会提示错误并给出指引。你也可以取消代码中手动配置区的注释，直接填入：
+
+```js
+const csrf = '你的csrf_token';
+const vmid = '你的B站UID';
+```
+
+CSRF 获取方法：`F12` → `Application` → `Cookies` → `bilibili.com` → 复制 `bili_jct` 的值。
 
 ## 配置说明
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `vmid` | 你的 B 站 UID | 需自行填写 |
-| `csrf` | Cookie 中的 bili_jct | 需自行填写 |
+| `csrf` | 自动从 Cookie `bili_jct` 读取 | 自动 |
+| `vmid` | 自动从 Cookie `DedeUserID` 读取 | 自动 |
 | `delay` | 每次取关的间隔时间（毫秒） | 200 |
 
 > **提示**：如果执行过程中被风控拦截，可以适当调大 `delay` 值（如改为 500 或 1000）。
