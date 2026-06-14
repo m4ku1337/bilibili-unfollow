@@ -53,7 +53,8 @@
     // 批量取消关注
     let done = 0;
     let failed = 0;
-    
+    let consecutiveFails = 0; // 连续失败计数
+
     for (let i = 0; i < allUids.length; i++) {
         let uid = allUids[i];
         try {
@@ -65,21 +66,28 @@
                 credentials: 'include'
             });
             let data = await res.json();
-            
+
             if (data.code === 0) {
                 done++;
+                consecutiveFails = 0; // 成功后重置
                 console.log(`[${i+1}/${allUids.length}] 取消关注成功 ${uid}`);
             } else {
                 failed++;
+                consecutiveFails++;
                 console.log(`[${i+1}/${allUids.length}] 取消关注失败 ${uid} - ${data.message}`);
             }
         } catch(e) {
             failed++;
+            consecutiveFails++;
             console.log(`[${i+1}/${allUids.length}] 网络错误 ${uid}`);
         }
-        
+
+        if (consecutiveFails >= 10) {
+            console.warn(`⚠ 已连续失败${consecutiveFails}次，建议：刷新网页后重新运行脚本，或调高 delay 值（当前${delay}ms，可改为500甚至1000）`);
+        }
+
         await new Promise(r => setTimeout(r, delay));
     }
-    
+
     console.log(`【完成】成功: ${done}, 失败: ${failed}, 总计: ${allUids.length}`);
 })();
