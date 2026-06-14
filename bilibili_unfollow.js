@@ -3,14 +3,37 @@
 // 按F12打开控制台，复制粘贴此代码，按回车运行
 
 (async function() {
-    const vmid = '填写你的B站UID'; // 你的Bilibili UID，在个人主页URL中可以看到
-    const csrf = '填写你的csrf_token'; // 从浏览器Cookie中的bili_jct字段获取
     const delay = 200; // 每个请求间隔200毫秒（避免风控）
 
-    if (vmid.includes('填写') || csrf.includes('填写')) {
-        console.error('请先填写你的UID和csrf_token后再运行！');
+    // 自动从Cookie获取CSRF和UID
+    function getCookie(name) {
+        let cookies = document.cookie.split('; ');
+        for (let c of cookies) {
+            if (c.startsWith(name + '=')) {
+                return decodeURIComponent(c.substring(name.length + 1));
+            }
+        }
+        return null;
+    }
+
+    let csrf = getCookie('bili_jct');
+    let vmid = getCookie('DedeUserID');
+
+    if (!csrf || !vmid) {
+        if (!csrf) console.warn('⚠ 未找到 bili_jct（CSRF Token），请确认已登录B站。');
+        if (!vmid) console.warn('⚠ 未找到 DedeUserID（UID），请确认已登录B站。');
+        console.log('💡 如需手动设置：在代码开头的"手动配置"区域填入你的 CSRF 和 UID');
+        console.log('💡 CSRF获取方法：F12 → Application → Cookies → bilibili.com → 复制 bili_jct 的值');
         return;
     }
+
+    console.log(`✅ 已自动获取 UID: ${vmid}`);
+    console.log(`✅ 已自动获取 CSRF: ${csrf.substring(0, 8)}...（已隐藏大部分）`);
+
+    // ---- 手动配置（自动获取失败时才需要填写）----
+    // const csrf = '填写你的csrf_token';
+    // const vmid = '填写你的B站UID';
+    // -------------------------------------------
     
     console.log('【开始获取关注列表】');
     
